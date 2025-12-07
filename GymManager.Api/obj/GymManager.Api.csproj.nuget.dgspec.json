@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Mehrdad\\Desktop\\Project\\GymClubReact\\GymManager.Api\\GymManager.Api.csproj": {}
+    "C:\\Users\\Mehrdad\\Desktop\\Project\\New folder\\GymClubReact\\GymManager.Api\\GymManager.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Mehrdad\\Desktop\\Project\\GymClubReact\\GymManager.Api\\GymManager.Api.csproj": {
+    "C:\\Users\\Mehrdad\\Desktop\\Project\\New folder\\GymClubReact\\GymManager.Api\\GymManager.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Mehrdad\\Desktop\\Project\\GymClubReact\\GymManager.Api\\GymManager.Api.csproj",
+        "projectUniqueName": "C:\\Users\\Mehrdad\\Desktop\\Project\\New folder\\GymClubReact\\GymManager.Api\\GymManager.Api.csproj",
         "projectName": "GymManager.Api",
-        "projectPath": "C:\\Users\\Mehrdad\\Desktop\\Project\\GymClubReact\\GymManager.Api\\GymManager.Api.csproj",
+        "projectPath": "C:\\Users\\Mehrdad\\Desktop\\Project\\New folder\\GymClubReact\\GymManager.Api\\GymManager.Api.csproj",
         "packagesPath": "C:\\Users\\Mehrdad\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Mehrdad\\Desktop\\Project\\GymClubReact\\GymManager.Api\\obj\\",
+        "outputPath": "C:\\Users\\Mehrdad\\Desktop\\Project\\New folder\\GymClubReact\\GymManager.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "f5lyzeEMZ7Q=",
+  "dgSpecHash": "cfdzH0LOtpQ=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Mehrdad\\Desktop\\Project\\GymClubReact\\GymManager.Api\\GymManager.Api.csproj",
+  "projectFilePath": "C:\\Users\\Mehrdad\\Desktop\\Project\\New folder\\GymClubReact\\GymManager.Api\\GymManager.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Mehrdad\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\Mehrdad\\.nuget\\packages\\microsoft.openapi\\1.6.14\\microsoft.openapi.1.6.14.nupkg.sha512",
