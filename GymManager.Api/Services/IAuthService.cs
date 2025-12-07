@@ -9,6 +9,9 @@ namespace GymManager.Api.Services
         Task<AuthResultDto> LoginAsync(LoginDto dto);
         Task<AuthResultDto> RefreshTokenAsync(string refreshToken);
         Task RevokeRefreshTokenAsync(string token);
+        Task RequestPasswordResetAsync(string nationalCode);
+        Task ResetPasswordAsync(string token, string newPassword);
+
     }
 
 }

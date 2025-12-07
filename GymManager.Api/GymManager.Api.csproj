@@ -11,6 +11,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
+    <PackageReference Include="MailKit" Version="4.14.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="MimeKit" Version="4.14.0" />
+    <PackageReference Include="Parbad" Version="3.11.3" />
+    <PackageReference Include="Parbad.AspNetCore" Version="1.5.0" />
+    <PackageReference Include="Parbad.Storage.Abstractions" Version="1.3.0" />
+    <PackageReference Include="Parbad.Storage.Cache" Version="1.5.0" />
+    <PackageReference Include="Parbad.Storage.EntityFrameworkCore" Version="1.6.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 

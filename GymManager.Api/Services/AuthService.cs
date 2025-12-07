@@ -1,14 +1,13 @@
 ﻿using GymManager.Api.Data;
 using GymManager.Api.DTOs;
 using GymManager.Api.Models;
+using GymManager.Api.Utilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-
 
 namespace GymManager.Api.Services
 {
@@ -18,6 +17,8 @@ namespace GymManager.Api.Services
         private readonly IConfiguration _config;
         private readonly TimeSpan _accessTokenValidity = TimeSpan.FromMinutes(60);
         private readonly TimeSpan _refreshTokenValidity = TimeSpan.FromDays(30);
+        private readonly IEmailService _emailService;
+
 
         public AuthService(AppDbContext db, IConfiguration config)
         {
@@ -137,6 +138,45 @@ namespace GymManager.Api.Services
                 await _db.SaveChangesAsync();
             }
         }
-    }
+        public async Task RequestPasswordResetAsync(string nationalCode)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.NationalCode == nationalCode);
+            if (user == null) return; // do not reveal existence
 
+            var token = TokenGenerator.GenerateToken(48);
+            var pr = new PasswordResetToken
+            {
+                UserId = user.Id,
+                Token = token,
+                ExpiresAt = DateTime.UtcNow.AddHours(2),
+                IsUsed = false
+            };
+            _db.PasswordResetTokens.Add(pr);
+            await _db.SaveChangesAsync();
+
+            // build link
+            var frontend = _config["FrontendUrl"] ?? "http://localhost:3000";
+            var link = $"{frontend}/auth/reset-password?token={Uri.EscapeDataString(token)}";
+
+            var body = $"<p>برای تغییر رمز عبور، لطفا روی لینک زیر کلیک کنید (اعتبار ۲ ساعت):</p><a href=\"{link}\">{link}</a>";
+            // send email - assume user.Phone contains user email in this setup? The model had Phone; assume user has email too.
+            // If you don't have email, adapt to SMS gateway.
+            var to = user.Phone; // <--- REPLACE: if you store email field use that
+            await _emailService.SendEmailAsync(to, "بازیابی رمز عبور", body);
+        }
+
+        public async Task ResetPasswordAsync(string token, string newPassword)
+        {
+            var pr = await _db.PasswordResetTokens.Include(p => p.User).FirstOrDefaultAsync(p => p.Token == token);
+            if (pr == null || pr.IsUsed || pr.ExpiresAt < DateTime.UtcNow)
+                throw new Exception("Invalid or expired token");
+
+            var user = pr.User;
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            pr.IsUsed = true;
+            await _db.SaveChangesAsync();
+        }
+
+
+    }
 }

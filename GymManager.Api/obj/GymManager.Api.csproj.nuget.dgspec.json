@@ -51,6 +51,50 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "BCrypt.Net-Core": {
+              "target": "Package",
+              "version": "[1.6.0, )"
+            },
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.14.1, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "MimeKit": {
+              "target": "Package",
+              "version": "[4.14.0, )"
+            },
+            "Parbad": {
+              "target": "Package",
+              "version": "[3.11.3, )"
+            },
+            "Parbad.AspNetCore": {
+              "target": "Package",
+              "version": "[1.5.0, )"
+            },
+            "Parbad.Storage.Abstractions": {
+              "target": "Package",
+              "version": "[1.3.0, )"
+            },
+            "Parbad.Storage.Cache": {
+              "target": "Package",
+              "version": "[1.5.0, )"
+            },
+            "Parbad.Storage.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[1.6.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.6.2, )"

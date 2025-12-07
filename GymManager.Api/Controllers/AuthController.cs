@@ -41,6 +41,23 @@ namespace GymManager.Api.Controllers
             await _auth.RevokeRefreshTokenAsync(dto.RefreshToken);
             return NoContent();
         }
+        [HttpPost("forgot")]
+        public async Task<IActionResult> Forgot([FromBody] ForgotDto dto)
+        {
+            await _auth.RequestPasswordResetAsync(dto.NationalCode);
+            // for security, return generic message
+            return Ok(new { message = "If the account exists, a password reset link has been sent." });
+        }
+
+        [HttpPost("reset")]
+        public async Task<IActionResult> Reset([FromBody] ResetDto dto)
+        {
+            await _auth.ResetPasswordAsync(dto.Token, dto.NewPassword);
+            return Ok(new { message = "Password has been reset" });
+        }
+        public record ForgotDto(string NationalCode);
+        public record ResetDto(string Token, string NewPassword);
+
     }
 
 }

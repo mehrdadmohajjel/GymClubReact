@@ -73,6 +73,8 @@
         public int RemainingSessions { get; set; } // for session-based
         public DateTime? ExpiresAt { get; set; }   // for monthly
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public bool IsActive { get; set; } = true;
     }
 
@@ -84,10 +86,18 @@
         public Guid? UserId { get; set; }
         public User? User { get; set; }
         public decimal Amount { get; set; }
+        public string PaymentStatus { get; set; }
+        public string GatewayName { get; set; }
+        public long TrackingNumber { get; set; }
+        public string TransactionCode { get; set; }
         public bool IsOnline { get; set; } = false;
         public bool IsPaid { get; set; } = false;
         public string? GatewayReference { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; }
+        public string RefundReason { get; set; }
+        public DateTime RefundedAt { get; set; }
+        public DateTime VerifiedAt { get; set; }
     }
 
     public class Movement

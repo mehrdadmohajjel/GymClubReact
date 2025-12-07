@@ -20,6 +20,7 @@ namespace GymManager.Api.Data
         public DbSet<BuffetPurchase> BuffetPurchases { get; set; } = null!;
         public DbSet<Attendance> Attendances { get; set; } = null!;
         public DbSet<SalaryPayment> SalaryPayments { get; set; } = null!;
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -54,6 +55,8 @@ namespace GymManager.Api.Data
 
             builder.Entity<Payment>()
                 .HasIndex(p => new { p.GymId, p.CreatedAt });
+            builder.Entity<PasswordResetToken>().HasIndex(p => p.Token).IsUnique();
+
         }
     }
 }

@@ -15,81 +15,105 @@ namespace GymManager.Api.Controllers
         private readonly AppDbContext _db;
         public MembershipsController(AppDbContext db) { _db = db; }
 
-        private Guid? GetGymIdFromClaims()
-        {
-            var gymClaim = User.FindFirst("gymId")?.Value;
-            if (string.IsNullOrEmpty(gymClaim)) return null;
-            return Guid.Parse(gymClaim);
-        }
+        private Guid GetUserId() => Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        private Guid? GetGymId() { var g = User.FindFirst("gymId")?.Value; if (Guid.TryParse(g, out var gid)) return gid; return null; }
 
         [Authorize(Policy = "GymAdminOnly")]
-        [HttpPost("assign")]
-        public async Task<IActionResult> Assign([FromBody] AssignMembershipDto dto)
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromBody] CreateMembershipDto dto)
         {
-            var gymId = GetGymIdFromClaims();
-            if (gymId == null) return Forbid();
-
+            var gymId = GetGymId() ?? throw new Exception("GymId missing");
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == dto.UserId && u.GymId == gymId);
-            if (user == null) return NotFound();
+            if (user == null) return NotFound("User not found");
 
-            var membership = new Membership
+            var mem = new Membership
             {
-                GymId = gymId.Value,
+                Id = Guid.NewGuid(),
+                GymId = gymId,
                 UserId = dto.UserId,
                 Type = dto.Type,
                 RemainingSessions = dto.Type == MembershipType.SessionBased ? dto.Sessions ?? 0 : 0,
                 ExpiresAt = dto.Type == MembershipType.Monthly ? DateTime.UtcNow.AddMonths(dto.Months ?? 1) : null,
+                CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };
 
-            _db.Memberships.Add(membership);
-            await _db.SaveChangesAsync();
+            _db.Memberships.Add(mem);
 
-            // register payment record
-            var payment = new Payment
+            // Payment record
+            var pay = new Payment
             {
-                GymId = gymId.Value,
+                Id = Guid.NewGuid(),
+                GymId = gymId,
                 UserId = dto.UserId,
                 Amount = dto.Amount,
                 IsOnline = dto.IsOnline,
-                IsPaid = dto.IsOnline ? false : true
+                IsPaid = !dto.IsOnline
             };
+            _db.Payments.Add(pay);
 
-            _db.Payments.Add(payment);
             await _db.SaveChangesAsync();
+            return Ok(new { membership = mem, payment = pay });
+        }
 
-            return Ok(membership);
+        [Authorize(Policy = "GymAdminOnly")]
+        [HttpPost("{id}/renew")]
+        public async Task<IActionResult> Renew(Guid id, [FromBody] RenewDto dto)
+        {
+            var gymId = GetGymId() ?? throw new Exception("GymId missing");
+            var mem = await _db.Memberships.FirstOrDefaultAsync(m => m.Id == id && m.GymId == gymId);
+            if (mem == null) return NotFound();
+
+            if (mem.Type == MembershipType.SessionBased)
+            {
+                mem.RemainingSessions += dto.Sessions ?? 0;
+            }
+            else
+            {
+                // extend by months
+                mem.ExpiresAt = (mem.ExpiresAt ?? DateTime.UtcNow).AddMonths(dto.Months ?? 1);
+            }
+
+            // record payment
+            var pay = new Payment
+            {
+                Id = Guid.NewGuid(),
+                GymId = gymId,
+                UserId = mem.UserId,
+                Amount = dto.Amount,
+                IsOnline = dto.IsOnline,
+                IsPaid = !dto.IsOnline
+            };
+            _db.Payments.Add(pay);
+
+            await _db.SaveChangesAsync();
+            return Ok(mem);
         }
 
         [Authorize]
         [HttpGet("my")]
         public async Task<IActionResult> MyMemberships()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Unauthorized();
-            var uid = Guid.Parse(userId);
+            var uid = GetUserId();
             var list = await _db.Memberships.Include(m => m.Gym).Where(m => m.UserId == uid).ToListAsync();
             return Ok(list);
         }
 
         [Authorize(Policy = "GymAdminOnly")]
         [HttpPost("{id}/deduct-session")]
-        public async Task<IActionResult> DeductSession(Guid id)
+        public async Task<IActionResult> Deduct(Guid id)
         {
-            var gymId = GetGymIdFromClaims();
-            if (gymId == null) return Forbid();
-
-            var membership = await _db.Memberships.FirstOrDefaultAsync(m => m.Id == id && m.GymId == gymId);
-            if (membership == null) return NotFound();
-
-            if (membership.Type != MembershipType.SessionBased)
-                return BadRequest("Not session-based membership");
-
-            membership.RemainingSessions = Math.Max(0, membership.RemainingSessions - 1);
+            var gymId = GetGymId() ?? throw new Exception("GymId missing");
+            var mem = await _db.Memberships.FirstOrDefaultAsync(m => m.Id == id && m.GymId == gymId);
+            if (mem == null) return NotFound();
+            if (mem.Type != MembershipType.SessionBased) return BadRequest("Not session based");
+            if (mem.RemainingSessions <= 0) return BadRequest("No sessions left");
+            mem.RemainingSessions--;
             await _db.SaveChangesAsync();
-            return Ok(membership);
+            return Ok(mem);
         }
     }
 
-    public record AssignMembershipDto(Guid UserId, MembershipType Type, int? Sessions, int? Months, decimal Amount, bool IsOnline);
+    public record CreateMembershipDto(Guid UserId, MembershipType Type, int? Sessions, int? Months, decimal Amount, bool IsOnline);
+    public record RenewDto(int? Sessions, int? Months, decimal Amount, bool IsOnline);
 }

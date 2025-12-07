@@ -1,35 +1,57 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useContext } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Auth/Login";
+import Register from "./pages/Auth/Register";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import SuperAdminDashboard from "./pages/SuperAdmin/Dashboard";
+import GymsManagement from "./pages/SuperAdmin/GymsManagement";
+import GymAdminDashboard from "./pages/GymAdmin/Dashboard";
+import Members from "./pages/GymAdmin/Members";
+import Trainers from "./pages/GymAdmin/Trainers";
+import Movements from "./pages/GymAdmin/Movements";
+import Buffet from "./pages/GymAdmin/Buffet";
+import Finance from "./pages/GymAdmin/Finance";
+import Attendance from "./pages/GymAdmin/Attendance";
+import TrainerDashboard from "./pages/Trainer/Dashboard";
+import CreateWorkout from "./pages/Trainer/CreateWorkout";
+import AthleteDashboard from "./pages/Athlete/Dashboard";
+import MyProgram from "./pages/Athlete/MyProgram";
+import MembershipPage from "./pages/Athlete/Membership";
+import PaymentResult from "./pages/Payments/Result";
+import PaymentMock from "./pages/Payments/MockPay";
+import { AuthContext } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import LayoutMain from "./components/LayoutMain";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+    const { user } = useContext(AuthContext);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    return (
+        <LayoutMain>
+            <Routes>
+                <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot" element={<ForgotPassword />} />
+                <Route path="/payments/result" element={<PaymentResult />} />
+                <Route path="/payments/mockpay" element={<PaymentMock />} />
 
-export default App
+                <Route path="/dashboard" element={<ProtectedRoute><DashboardSwitch /></ProtectedRoute>} />
+
+                <Route path="*" element={<div>Not Found</div>} />
+            </Routes>
+        </LayoutMain>
+    );
+};
+
+const DashboardSwitch = () => {
+    const { user } = React.useContext(AuthContext);
+    if (!user) return <Navigate to="/login" />;
+
+    if (user.role === "SuperAdmin") return <SuperAdminDashboard />;
+    if (user.role === "GymAdmin") return <GymAdminDashboard />;
+    if (user.role === "Trainer") return <TrainerDashboard />;
+    return <AthleteDashboard />;
+};
+
+export default App;
