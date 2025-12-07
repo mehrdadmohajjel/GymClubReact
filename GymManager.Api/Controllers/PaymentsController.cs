@@ -172,7 +172,7 @@ namespace GymManager.Api.Controllers
                     dbPayment.IsPaid = verifyResult.IsSucceed;
                     dbPayment.TransactionCode = verifyResult.TransactionCode;
                     dbPayment.PaymentStatus = verifyResult.IsSucceed ? "Completed" : "Failed";
-                    dbPayment.GatewayReference = verifyResult.GatewayReferenceNumber;
+                   // dbPayment.GatewayReference = verifyResult.GatewayReferenceNumber;
                     dbPayment.VerifiedAt = DateTime.UtcNow;
                     dbPayment.UpdatedAt = DateTime.UtcNow;
                     // به‌روزرسانی در دیتابیس
@@ -180,7 +180,7 @@ namespace GymManager.Api.Controllers
                     if (verifyResult.IsSucceed)
                     {
                         // فعال‌سازی عضویت کاربر
-                        await ActivateUserMembership(dbPayment.UserId, dbPayment.GymId);
+                     //   await ActivateUserMembership(dbPayment.UserId, dbPayment.GymId);
                     }
                 }
 

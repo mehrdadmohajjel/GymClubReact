@@ -26,73 +26,73 @@ namespace GymManager.Api.Services
             _logger = logger;
         }
 
-        public async Task<(Guid paymentId, string redirectUrl)> CreatePaymentAsync(
-            Guid userId, Guid gymId, decimal amount, bool isOnline, HttpContext httpContext)
-        {
-            try
-            {
-                var payment = new Payment
-                {
-                    Id = Guid.NewGuid(),
-                    GymId = gymId,
-                    UserId = userId,
-                    Amount = amount,
-                    IsOnline = isOnline,
-                    IsPaid = false,
-                    PaymentStatus = "Pending",
-                    CreatedAt = DateTime.UtcNow
-                };
+        //public async Task<(Guid paymentId, string redirectUrl)> CreatePaymentAsync(
+        //    Guid userId, Guid gymId, decimal amount, bool isOnline, HttpContext httpContext)
+        //{
+        //    try
+        //    {
+        //        var payment = new Payment
+        //        {
+        //            Id = Guid.NewGuid(),
+        //            GymId = gymId,
+        //            UserId = userId,
+        //            Amount = amount,
+        //            IsOnline = isOnline,
+        //            IsPaid = false,
+        //            PaymentStatus = "Pending",
+        //            CreatedAt = DateTime.UtcNow
+        //        };
 
-                _db.Payments.Add(payment);
-                await _db.SaveChangesAsync();
+        //        _db.Payments.Add(payment);
+        //        await _db.SaveChangesAsync();
 
-                if (!isOnline)
-                {
-                    payment.IsPaid = true;
-                    payment.PaymentStatus = "Completed";
-                    payment.UpdatedAt = DateTime.UtcNow;
-                    await _db.SaveChangesAsync();
+        //        if (!isOnline)
+        //        {
+        //            payment.IsPaid = true;
+        //            payment.PaymentStatus = "Completed";
+        //            payment.UpdatedAt = DateTime.UtcNow;
+        //            await _db.SaveChangesAsync();
 
-                    return (payment.Id, "/Payment/PaymentResult?paymentId=" + payment.Id + "&success=true");
-                }
+        //            return (payment.Id, "/Payment/PaymentResult?paymentId=" + payment.Id + "&success=true");
+        //        }
 
-                // ایجاد درخواست پرداخت آنلاین
-                var callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/Payment/Verify?paymentId={payment.Id}";
+        //        // ایجاد درخواست پرداخت آنلاین
+        //        var callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/Payment/Verify?paymentId={payment.Id}";
 
-                var result = await _onlinePayment.RequestAsync(invoice =>
-                {
-                    invoice.SetCallbackUrl(callbackUrl)
-                           .SetAmount(amount)
-                           .SetGateway("Melli") // یا از تنظیمات بگیرید
-                           .UseAutoIncrementTrackingNumber();
-                });
+        //        var result = await _onlinePayment.RequestAsync(invoice =>
+        //        {
+        //            invoice.SetCallbackUrl(callbackUrl)
+        //                   .SetAmount(amount)
+        //                   .SetGateway("Melli") // یا از تنظیمات بگیرید
+        //                   .UseAutoIncrementTrackingNumber();
+        //        });
 
-                if (result.IsSucceed)
-                {
-                    // ذخیره شماره تراکنش
-                    payment.TrackingNumber = result.TrackingNumber;
-                    payment.GatewayName = result.GatewayName;
-                    await _db.SaveChangesAsync();
+        //        if (result.IsSucceed)
+        //        {
+        //            // ذخیره شماره تراکنش
+        //            payment.TrackingNumber = result.TrackingNumber;
+        //            payment.GatewayName = result.GatewayName;
+        //            await _db.SaveChangesAsync();
 
-                    // انتقال به درگاه پرداخت
-                    return (payment.Id, result.GatewayTransporter.GetGatewayUrl());
-                }
-                else
-                {
-                    _logger.LogError($"Parbad CreatePayment failed: {result.Message}");
-                    payment.PaymentStatus = "Failed";
-                    payment.UpdatedAt = DateTime.UtcNow;
-                    await _db.SaveChangesAsync();
+        //            // انتقال به درگاه پرداخت
+        //           // return (payment.Id, result.GatewayTransporter.GetGatewayUrl());
+        //        }
+        //        else
+        //        {
+        //            _logger.LogError($"Parbad CreatePayment failed: {result.Message}");
+        //            payment.PaymentStatus = "Failed";
+        //            payment.UpdatedAt = DateTime.UtcNow;
+        //            await _db.SaveChangesAsync();
 
-                    throw new Exception($"Unable to create payment: {result.Message}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in CreatePaymentAsync");
-                throw;
-            }
-        }
+        //            throw new Exception($"Unable to create payment: {result.Message}");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error in CreatePaymentAsync");
+        //        throw;
+        //    }
+        //}
 
         public async Task VerifyCallbackAsync(HttpContext httpContext)
         {
@@ -130,7 +130,7 @@ namespace GymManager.Api.Services
                 payment.IsPaid = verifyResult.IsSucceed;
                 payment.PaymentStatus = verifyResult.IsSucceed ? "Completed" : "Failed";
                 payment.TransactionCode = verifyResult.TransactionCode;
-                payment.GatewayReference = verifyResult.GatewayReferenceNumber;
+              //  payment.GatewayReference = verifyResult.GatewayReferenceNumber;
                 payment.VerifiedAt = DateTime.UtcNow;
                 payment.UpdatedAt = DateTime.UtcNow;
 

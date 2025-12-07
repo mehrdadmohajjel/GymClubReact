@@ -2,7 +2,7 @@
 {
     public class EmailService : IEmailService
     {
-        public Task SendAsync(string email, string subject, string body)
+        public Task SendEmailAsync(string email, string subject, string body)
         {
             Console.WriteLine("=== EMAIL MOCK ===");
             Console.WriteLine($"To: {email}");
@@ -10,6 +10,7 @@
             Console.WriteLine(body);
             return Task.CompletedTask;
         }
+
     }
 }
 

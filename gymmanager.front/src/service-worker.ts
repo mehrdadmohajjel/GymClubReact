@@ -7,7 +7,7 @@ self.addEventListener("install", (event: any) => {
 });
 
 self.addEventListener("activate", (event: any) => {
-    event.waitUntil(self.clients.claim());
+    event.waitUntil(self.Clients.claim());
 });
 
 self.addEventListener("fetch", (event: any) => {
