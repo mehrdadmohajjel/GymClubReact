@@ -11,7 +11,10 @@ namespace GymManager.Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _auth;
-        public AuthController(IAuthService auth) { _auth = auth; }
+        private readonly ITokenGenerator _tokens;
+        private readonly IEmailService _email;
+
+        public AuthController(IAuthService auth, ITokenGenerator tokens, IEmailService email) { _auth = auth;_tokens = tokens;_email = email; }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)

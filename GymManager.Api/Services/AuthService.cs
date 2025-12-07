@@ -31,11 +31,16 @@ namespace GymManager.Api.Services
             if (await _db.Users.AnyAsync(u => u.NationalCode == dto.NationalCode))
                 throw new Exception("National code already registered");
 
+            if (await _db.Users.AnyAsync(u => u.Email == dto.Email))
+                throw new Exception("email code already registered");
+
+
             var user = new User
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 NationalCode = dto.NationalCode,
+                Email = dto.Email,
                 Phone = dto.Phone,
                 Role = defaultRole,
                 GymId = dto.GymId

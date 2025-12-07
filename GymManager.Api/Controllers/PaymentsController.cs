@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Parbad;
+using Parbad.AspNetCore;
 
 namespace GymManager.Api.Controllers
 {
@@ -153,7 +154,7 @@ namespace GymManager.Api.Controllers
                     if (payment != null)
                     {
                         payment.PaymentStatus = "Cancelled";
-                        payment.CancellationReason = "ظرفیت تکمیل شد";
+                        payment.RefundReason = "ظرفیت تکمیل شد";
                         payment.UpdatedAt = DateTime.UtcNow;
                         // به‌روزرسانی در دیتابیس
                     }

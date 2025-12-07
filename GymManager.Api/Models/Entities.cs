@@ -26,10 +26,13 @@
         public Guid Id { get; set; } = Guid.NewGuid();
         public Guid? GymId { get; set; }  // nullable for SuperAdmin account
         public Gym? Gym { get; set; }
+        public string Username { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public string NationalCode { get; set; } = null!; // username
         public string Phone { get; set; } = "";
+        public string Email { get; set; }   // NEW
+
         public string PasswordHash { get; set; } = null!;
         public Role Role { get; set; } = Role.Athlete;
         public bool IsActive { get; set; } = true;
